@@ -58,14 +58,17 @@
     mix-blend-mode: multiply;
   }
   .nav-name {
-    font-family: var(--serif);
-    font-size: 15px;
+    font-family: var(--sans);
+    font-size: 11px;
     font-weight: 300;
     letter-spacing: 0.15em;
     text-transform: uppercase;
     color: var(--black);
     text-decoration: none;
+    opacity: 0.5;
+    transition: opacity 0.3s;
   }
+  .nav-name:hover { opacity: 1; }
   .nav-links {
     display: flex;
     gap: 36px;
@@ -308,6 +311,23 @@
     color: white;
   }
 
+  /* CONCEPT SECTION */
+  .concept-grid {
+    columns: 4;
+    column-gap: 2px;
+  }
+  .concept-grid img {
+    width: 100%;
+    display: block;
+    margin-bottom: 2px;
+    break-inside: avoid;
+    filter: grayscale(20%);
+    transition: filter 0.4s ease;
+  }
+  .concept-grid img:hover {
+    filter: grayscale(0%);
+  }
+
   /* ABOUT */
   .about {
     background: var(--black);
@@ -497,6 +517,7 @@
   <a href="#" class="nav-name">Sean Swanson</a>
   <ul class="nav-links">
     <li><a href="#work">Work</a></li>
+    <li><a href="#concept">Concept</a></li>
     <li><a href="#about">About</a></li>
     <li><a href="#experience">Experience</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -515,11 +536,7 @@
     </div>
   </div>
   <div class="hero-right">
-    <!-- Replace this div with: <img src="your-hero-image.jpg" style="width:100%;height:100%;object-fit:cover;"> -->
-    <div class="hero-image-placeholder">
-      <p class="hero-image-label">Featured Project</p>
-      <p class="hero-image-title">Private Residential Extension, London</p>
-    </div>
+    <img src="Image3_001.jpeg" style="width:100%;height:100%;object-fit:cover;">
   </div>
 </section>
 
@@ -545,33 +562,146 @@
 <section class="section" id="work">
   <div class="section-header reveal">
     <h2 class="section-title">Selected Work</h2>
-    <span class="section-count">03 Projects</span>
+    <span class="section-count">16 Projects</span>
   </div>
   <div class="projects-grid">
     <div class="project-card reveal">
-      <!-- Replace with: <img class="project-image" src="mw-hero.jpg" alt="MW Project"> -->
-      <div class="project-placeholder p1">[ Replace with your best MW render ]</div>
+      <img class="project-image" src="Image3_001.jpeg" alt="Pound Lane">
       <div class="project-overlay">
         <p class="project-location">London, UK — MW Architects</p>
-        <p class="project-name">Private Residential Refurbishment</p>
+        <p class="project-name">Pound Lane</p>
       </div>
     </div>
     <div class="project-card reveal">
-      <!-- Replace with: <img class="project-image" src="sc-project.jpg" alt="S+C Project"> -->
-      <div class="project-placeholder p2">[ Replace with NZ residential render ]</div>
+      <img class="project-image" src="milns_park.png" alt="Milns Park">
+      <div class="project-overlay">
+        <p class="project-location">Christchurch, NZ — Stufkens + Chambers</p>
+        <p class="project-name">Milns Park Duplex</p>
+      </div>
+    </div>
+    <div class="project-card reveal">
+      <img class="project-image" src="spencer_road.png" alt="Spencer Road">
+      <div class="project-overlay">
+        <p class="project-location">Christchurch, NZ — Stufkens + Chambers</p>
+        <p class="project-name">Spencer Road Alteration</p>
+      </div>
+    </div>
+    <div class="project-card reveal">
+      <img class="project-image" src="elephant_lane.jpg" alt="Elephant Lane">
+      <div class="project-overlay">
+        <p class="project-location">London, UK — MW Architects</p>
+        <p class="project-name">Elephant Lane Alteration</p>
+      </div>
+    </div>
+    <div class="project-card reveal">
+      <img class="project-image" src="liverpool_road.jpg" alt="Liverpool Road">
+      <div class="project-overlay">
+        <p class="project-location">London, UK — MW Architects</p>
+        <p class="project-name">Liverpool Road</p>
+      </div>
+    </div>
+    <div class="project-card reveal">
+      <img class="project-image" src="mw_pound_front.jpg" alt="Pound Lane Front">
+      <div class="project-overlay">
+        <p class="project-location">London, UK — MW Architects</p>
+        <p class="project-name">Pound Lane — Street View</p>
+      </div>
+    </div>
+    <div class="project-card reveal">
+      <img class="project-image" src="mw_living_room.jpg" alt="Pound Lane Living Room">
+      <div class="project-overlay">
+        <p class="project-location">London, UK — MW Architects</p>
+        <p class="project-name">Pound Lane — Living Room</p>
+      </div>
+    </div>
+    <div class="project-card reveal">
+      <img class="project-image" src="mw_interior.jpg" alt="Pound Lane Bathroom">
+      <div class="project-overlay">
+        <p class="project-location">London, UK — MW Architects</p>
+        <p class="project-name">Pound Lane — Bathroom</p>
+      </div>
+    </div>
+    <div class="project-card reveal">
+      <img class="project-image" src="sc_247_street.jpg" alt="247 Street">
       <div class="project-overlay">
         <p class="project-location">Christchurch, NZ — Stufkens + Chambers</p>
         <p class="project-name">Residential New Build</p>
       </div>
     </div>
     <div class="project-card reveal">
-      <!-- Replace with: <img class="project-image" src="townhouse.jpg" alt="Townhouse"> -->
-      <div class="project-placeholder p3">[ Replace with townhouse / education image ]</div>
+      <img class="project-image" src="sc_red_row.jpg" alt="Red Row Houses">
       <div class="project-overlay">
         <p class="project-location">Christchurch, NZ — Stufkens + Chambers</p>
-        <p class="project-name">Townhouse Development</p>
+        <p class="project-name">Terraced Housing Development</p>
       </div>
     </div>
+    <div class="project-card reveal">
+      <img class="project-image" src="sc_education.jpg" alt="Education">
+      <div class="project-overlay">
+        <p class="project-location">Christchurch, NZ — Stufkens + Chambers</p>
+        <p class="project-name">Education Facility</p>
+      </div>
+    </div>
+    <div class="project-card reveal">
+      <img class="project-image" src="sc_education_entry.jpg" alt="Education Entry">
+      <div class="project-overlay">
+        <p class="project-location">Christchurch, NZ — Stufkens + Chambers</p>
+        <p class="project-name">Education Facility — Entry</p>
+      </div>
+    </div>
+    <div class="project-card reveal">
+      <img class="project-image" src="sc_linwood_aerial.jpg" alt="Linwood Aerial">
+      <div class="project-overlay">
+        <p class="project-location">Christchurch, NZ — Stufkens + Chambers</p>
+        <p class="project-name">Linwood Townhouses</p>
+      </div>
+    </div>
+    <div class="project-card reveal">
+      <img class="project-image" src="sc_residential.jpg" alt="NZ Residential">
+      <div class="project-overlay">
+        <p class="project-location">Christchurch, NZ — Stufkens + Chambers</p>
+        <p class="project-name">Residential New Build</p>
+      </div>
+    </div>
+    <div class="project-card reveal">
+      <img class="project-image" src="sc_elevation.jpg" alt="Elevation">
+      <div class="project-overlay">
+        <p class="project-location">Christchurch, NZ — Stufkens + Chambers</p>
+        <p class="project-name">Proposed Elevation</p>
+      </div>
+    </div>
+    <div class="project-card reveal">
+      <img class="project-image" src="model_timber.jpg" alt="Timber Model">
+      <div class="project-overlay">
+        <p class="project-location">Academic Work — Ara Institute</p>
+        <p class="project-name">Timber Structure Model</p>
+      </div>
+    </div>
+    <div class="project-card reveal">
+      <img class="project-image" src="model_timber2.jpg" alt="Timber Model 2">
+      <div class="project-overlay">
+        <p class="project-location">Academic Work — Ara Institute</p>
+        <p class="project-name">Structural Model</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONCEPT -->
+<section class="section" id="concept">
+  <div class="section-header reveal">
+    <h2 class="section-title">Concept & Academic Work</h2>
+    <span class="section-count">Ara Institute of Canterbury — BArch</span>
+  </div>
+  <div class="concept-grid reveal">
+    <img src="concept_1.png" alt="Concept 1">
+    <img src="concept_2.png" alt="Concept 2">
+    <img src="concept_3.png" alt="Concept 3">
+    <img src="concept_4.png" alt="Concept 4">
+    <img src="concept_5.png" alt="Concept 5">
+    <img src="concept_6.png" alt="Concept 6">
+    <img src="concept_7.png" alt="Concept 7">
+    <img src="concept_8.png" alt="Concept 8">
   </div>
 </section>
 
