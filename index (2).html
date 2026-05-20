@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sean Swanson — Architectural Designer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Archivo:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --black: #0e0e0e;
+    --white: #f5f4f0;
+    --grey: #9a9890;
+    --accent: #c8b89a;
+    --sans: 'Archivo', sans-serif;
+    --serif: 'Cormorant Garamond', serif;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--white);
+    color: var(--black);
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 300;
+    letter-spacing: 0.02em;
+    cursor: none;
+  }
+
+  /* Cursor */
+  .cursor {
+    width: 8px; height: 8px;
+    background: var(--black);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s ease, width 0.3s ease, height 0.3s ease, background 0.3s ease;
+  }
+  .cursor.expand { width: 40px; height: 40px; background: transparent; border: 1px solid var(--black); }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 28px 48px;
+    mix-blend-mode: multiply;
+  }
+  .nav-name {
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--black);
+    text-decoration: none;
+    opacity: 0.5;
+    transition: opacity 0.3s;
+  }
+  .nav-name:hover { opacity: 1; }
+  .nav-links { display: flex; gap: 36px; list-style: none; }
+  .nav-links a {
+    font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--black); text-decoration: none; opacity: 0.5; transition: opacity 0.3s;
+  }
+  .nav-links a:hover { opacity: 1; }
+
+  /* HERO */
+  .hero { height: 100vh; display: grid; grid-template-columns: 1fr 1fr; overflow: hidden; }
+  .hero-left {
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 0 48px 64px;
+  }
+  .hero-eyebrow { font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--grey); margin-bottom: 20px; opacity: 0; animation: fadeUp 1s ease 0.3s forwards; }
+  .hero-title { font-family: var(--serif); font-size: clamp(52px, 6vw, 88px); font-weight: 300; line-height: 1.05; letter-spacing: -0.01em; opacity: 0; animation: fadeUp 1s ease 0.5s forwards; }
+  .hero-title em { font-style: italic; color: var(--grey); }
+  .hero-sub { margin-top: 32px; max-width: 320px; line-height: 1.8; color: var(--grey); opacity: 0; animation: fadeUp 1s ease 0.7s forwards; }
+  .hero-cta { margin-top: 48px; display: flex; gap: 24px; align-items: center; opacity: 0; animation: fadeUp 1s ease 0.9s forwards; }
+  .btn { display: inline-block; padding: 12px 28px; border: 1px solid var(--black); font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; color: var(--black); transition: background 0.3s, color 0.3s; }
+  .btn:hover { background: var(--black); color: var(--white); }
+  .btn-ghost { background: none; border: none; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--grey); text-decoration: none; display: flex; align-items: center; gap: 8px; transition: color 0.3s; }
+  .btn-ghost:hover { color: var(--black); }
+  .hero-right { position: relative; overflow: hidden; }
+  .hero-right img { width: 100%; height: 100%; object-fit: cover; opacity: 0; animation: fadeIn 1.5s ease 0.2s forwards; }
+
+  /* MARQUEE */
+  .marquee-wrap { border-top: 1px solid rgba(0,0,0,0.12); border-bottom: 1px solid rgba(0,0,0,0.12); overflow: hidden; padding: 14px 0; }
+  .marquee { display: flex; gap: 64px; white-space: nowrap; animation: marquee 20s linear infinite; }
+  .marquee span { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--grey); flex-shrink: 0; }
+  .marquee span strong { color: var(--black); font-weight: 400; }
+
+  /* WORK */
+  .section { padding: 120px 48px; }
+  .section-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 64px; border-top: 1px solid rgba(0,0,0,0.12); padding-top: 24px; }
+  .section-title { font-family: var(--serif); font-size: 36px; font-weight: 300; letter-spacing: -0.01em; }
+  .section-count { font-size: 11px; letter-spacing: 0.15em; color: var(--grey); text-transform: uppercase; }
+
+  /* PROJECT GRID */
+  .projects-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+  .project-card { position: relative; overflow: hidden; background: #ccc; aspect-ratio: 4/3; cursor: none; }
+  .project-card.full { grid-column: span 2; aspect-ratio: 16/7; }
+  .project-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94); display: block; }
+  .project-card:hover img { transform: scale(1.04); }
+  .project-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 32px; background: linear-gradient(transparent, rgba(0,0,0,0.55)); transform: translateY(8px); opacity: 0; transition: all 0.4s ease; }
+  .project-card:hover .project-overlay { opacity: 1; transform: translateY(0); }
+  .project-location { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.6); margin-bottom: 4px; }
+  .project-name { font-family: var(--serif); font-size: 22px; font-weight: 300; color: white; }
+
+  /* LIGHTBOX */
+  .lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center; flex-direction: column; }
+  .lightbox.active { display: flex; }
+  .lightbox-inner { position: relative; max-width: 90vw; max-height: 85vh; }
+  .lightbox-inner img { max-width: 90vw; max-height: 80vh; object-fit: contain; display: block; }
+  .lightbox-info { margin-top: 16px; text-align: center; }
+  .lightbox-info p { color: rgba(255,255,255,0.5); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; }
+  .lightbox-info h3 { color: white; font-family: var(--serif); font-size: 22px; font-weight: 300; margin-top: 4px; }
+  .lightbox-close { position: fixed; top: 32px; right: 32px; color: white; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; cursor: none; opacity: 0.6; transition: opacity 0.3s; background: none; border: none; }
+  .lightbox-close:hover { opacity: 1; }
+  .lightbox-nav { position: fixed; top: 50%; transform: translateY(-50%); color: white; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; cursor: none; opacity: 0.6; transition: opacity 0.3s; background: none; border: none; padding: 16px; }
+  .lightbox-nav:hover { opacity: 1; }
+  .lightbox-prev { left: 24px; }
+  .lightbox-next { right: 24px; }
+  .lightbox-counter { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.4); font-size: 10px; letter-spacing: 0.2em; }
+
+  /* ABOUT */
+  .about { background: var(--black); color: var(--white); padding: 120px 48px; display: grid; grid-template-columns: 1fr 1fr; gap: 96px; align-items: center; }
+  .about-tag { font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent); margin-bottom: 24px; }
+  .about-heading { font-family: var(--serif); font-size: clamp(36px, 4vw, 56px); font-weight: 300; line-height: 1.1; letter-spacing: -0.01em; }
+  .about-heading em { font-style: italic; color: var(--accent); }
+  .about-bio { line-height: 2; color: rgba(245,244,240,0.65); margin-bottom: 40px; }
+  .about-bio strong { color: var(--white); font-weight: 400; }
+  .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-top: 48px; }
+  .skill-item { border: 1px solid rgba(255,255,255,0.08); padding: 20px; }
+  .skill-label { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+  .skill-value { font-size: 13px; color: rgba(245,244,240,0.7); line-height: 1.6; }
+
+  /* EXPERIENCE */
+  .experience { padding: 120px 48px; }
+  .exp-item { display: grid; grid-template-columns: 200px 1fr 160px; gap: 48px; padding: 36px 0; border-bottom: 1px solid rgba(0,0,0,0.1); align-items: start; }
+  .exp-company { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500; padding-top: 3px; }
+  .exp-location { font-size: 11px; color: var(--grey); margin-top: 4px; letter-spacing: 0.05em; }
+  .exp-role { font-family: var(--serif); font-size: 22px; font-weight: 300; margin-bottom: 12px; }
+  .exp-desc { color: var(--grey); line-height: 1.8; font-size: 13px; }
+  .exp-date { font-size: 11px; letter-spacing: 0.1em; color: var(--grey); text-align: right; padding-top: 5px; }
+
+  /* CONTACT */
+  .contact { padding: 120px 48px; border-top: 1px solid rgba(0,0,0,0.12); display: grid; grid-template-columns: 1fr 1fr; gap: 96px; align-items: end; }
+  .contact-heading { font-family: var(--serif); font-size: clamp(48px, 6vw, 80px); font-weight: 300; line-height: 1.05; letter-spacing: -0.02em; }
+  .contact-heading em { font-style: italic; color: var(--grey); }
+  .contact-item { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid rgba(0,0,0,0.1); }
+  .contact-label { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--grey); }
+  .contact-value { font-size: 13px; color: var(--black); text-decoration: none; transition: color 0.3s; }
+  .contact-value:hover { color: var(--grey); }
+
+  /* FOOTER */
+  footer { padding: 28px 48px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(0,0,0,0.08); }
+  footer span { font-size: 11px; letter-spacing: 0.1em; color: var(--grey); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.9s ease, transform 0.9s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightbox-close">Close ✕</button>
+  <button class="lightbox-nav lightbox-prev" id="lightbox-prev">← Prev</button>
+  <div class="lightbox-inner">
+    <img id="lightbox-img" src="" alt="">
+    <div class="lightbox-info">
+      <p id="lightbox-location"></p>
+      <h3 id="lightbox-title"></h3>
+    </div>
+  </div>
+  <button class="lightbox-nav lightbox-next" id="lightbox-next">Next →</button>
+  <div class="lightbox-counter" id="lightbox-counter"></div>
+</div>
+
+<nav>
+  <a href="#" class="nav-name">Sean Swanson</a>
+  <ul class="nav-links">
+    <li><a href="#work">Work</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <p class="hero-eyebrow">Architectural Designer — Melbourne</p>
+    <h1 class="hero-title">Design<br>through <em>detail</em></h1>
+    <p class="hero-sub">Residential architecture across New Zealand and London. Focused on well-resolved design, careful documentation, and buildable outcomes.</p>
+    <div class="hero-cta">
+      <a href="#work" class="btn">View Work</a>
+      <a href="Sean_Swanson_CV.pdf" class="btn-ghost" target="_blank">Download CV →</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <img src="Image3_001.jpeg" alt="Pound Lane">
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee">
+    <span><strong>ArchiCAD</strong> — Proficient</span>
+    <span><strong>Twinmotion</strong> — Visualisation</span>
+    <span><strong>MW Architects</strong> — London, UK</span>
+    <span><strong>Stufkens + Chambers</strong> — Christchurch, NZ</span>
+    <span><strong>Residential</strong> — All RIBA Stages</span>
+    <span><strong>Full Working Rights</strong> — Australia</span>
+    <span><strong>ArchiCAD</strong> — Proficient</span>
+    <span><strong>Twinmotion</strong> — Visualisation</span>
+    <span><strong>MW Architects</strong> — London, UK</span>
+    <span><strong>Stufkens + Chambers</strong> — Christchurch, NZ</span>
+    <span><strong>Residential</strong> — All RIBA Stages</span>
+    <span><strong>Full Working Rights</strong> — Australia</span>
+  </div>
+</div>
+
+<!-- WORK -->
+<section class="section" id="work">
+  <div class="section-header reveal">
+    <h2 class="section-title">Selected Work</h2>
+    <span class="section-count">Selected Projects</span>
+  </div>
+  <div class="projects-grid">
+
+    <!-- POUND LANE — full width, 1 image -->
+    <div class="project-card full reveal" data-images='[{"src":"Image3_001.jpeg","location":"London, UK — MW Architects","title":"Pound Lane"}]'>
+      <img src="Image3_001.jpeg" alt="Pound Lane">
+      <div class="project-overlay">
+        <p class="project-location">London, UK — MW Architects</p>
+        <p class="project-name">Pound Lane</p>
+      </div>
+    </div>
+
+    <!-- ELEPHANT LANE — with bathroom interior -->
+    <div class="project-card reveal" data-images='[{"src":"elephant_lane.jpg","location":"London, UK — MW Architects","title":"Elephant Lane"},{"src":"mw_interior.jpg","location":"London, UK — MW Architects","title":"Elephant Lane — Interior"}]'>
+      <img src="elephant_lane.jpg" alt="Elephant Lane">
+      <div class="project-overlay">
+        <p class="project-location">London, UK — MW Architects</p>
+        <p class="project-name">Elephant Lane</p>
+      </div>
+    </div>
+
+    <!-- LIVERPOOL ROAD — with living room -->
+    <div class="project-card reveal" data-images='[{"src":"liverpool_road.jpg","location":"London, UK — MW Architects","title":"Liverpool Road"},{"src":"mw_living_room.jpg","location":"London, UK — MW Architects","title":"Liverpool Road — Living Room"}]'>
+      <img src="liverpool_road.jpg" alt="Liverpool Road">
+      <div class="project-overlay">
+        <p class="project-location">London, UK — MW Architects</p>
+        <p class="project-name">Liverpool Road</p>
+      </div>
+    </div>
+
+    <!-- MILNS PARK — full width -->
+    <div class="project-card full reveal" data-images='[{"src":"milns_park.png","location":"Christchurch, NZ — Stufkens + Chambers","title":"Milns Park Duplex"}]'>
+      <img src="milns_park.png" alt="Milns Park">
+      <div class="project-overlay">
+        <p class="project-location">Christchurch, NZ — Stufkens + Chambers</p>
+        <p class="project-name">Milns Park Duplex</p>
+      </div>
+    </div>
+
+    <!-- TERRACED HOUSING — full width -->
+    <div class="project-card full reveal" data-images='[{"src":"sc_red_row.jpg","location":"Christchurch, NZ — Stufkens + Chambers","title":"Terraced Housing Development"}]'>
+      <img src="sc_red_row.jpg" alt="Terraced Housing">
+      <div class="project-overlay">
+        <p class="project-location">Christchurch, NZ — Stufkens + Chambers</p>
+        <p class="project-name">Terraced Housing Development</p>
+      </div>
+    </div>
+
+    <!-- SPENCER ROAD — with residential secondary -->
+    <div class="project-card reveal" data-images='[{"src":"spencer_road.png","location":"Christchurch, NZ — Stufkens + Chambers","title":"Spencer Road"},{"src":"sc_residential.jpg","location":"Christchurch, NZ — Stufkens + Chambers","title":"Spencer Road — View 2"}]'>
+      <img src="spencer_road.png" alt="Spencer Road">
+      <div class="project-overlay">
+        <p class="project-location">Christchurch, NZ — Stufkens + Chambers</p>
+        <p class="project-name">Spencer Road</p>
+      </div>
+    </div>
+
+    <!-- EDUCATION — entry as main, second angle secondary -->
+    <div class="project-card reveal" data-images='[{"src":"sc_education_entry.jpg","location":"Christchurch, NZ — Stufkens + Chambers","title":"Education Facility"},{"src":"sc_education.jpg","location":"Christchurch, NZ — Stufkens + Chambers","title":"Education Facility — Overview"}]'>
+      <img src="sc_education_entry.jpg" alt="Education Facility">
+      <div class="project-overlay">
+        <p class="project-location">Christchurch, NZ — Stufkens + Chambers</p>
+        <p class="project-name">Education Facility</p>
+      </div>
+    </div>
+
+    <!-- 247 STREET -->
+    <div class="project-card reveal" data-images='[{"src":"sc_247_street.jpg","location":"Christchurch, NZ — Stufkens + Chambers","title":"Residential New Build"}]'>
+      <img src="sc_247_street.jpg" alt="Residential New Build">
+      <div class="project-overlay">
+        <p class="project-location">Christchurch, NZ — Stufkens + Chambers</p>
+        <p class="project-name">Residential New Build</p>
+      </div>
+    </div>
+
+    <!-- LINWOOD AERIAL -->
+    <div class="project-card reveal" data-images='[{"src":"sc_linwood_aerial.jpg","location":"Christchurch, NZ — Stufkens + Chambers","title":"Linwood Townhouses"}]'>
+      <img src="sc_linwood_aerial.jpg" alt="Linwood Townhouses">
+      <div class="project-overlay">
+        <p class="project-location">Christchurch, NZ — Stufkens + Chambers</p>
+        <p class="project-name">Linwood Townhouses</p>
+      </div>
+    </div>
+
+    <!-- TIMBER MODEL -->
+    <div class="project-card reveal" data-images='[{"src":"model_timber2.jpg","location":"Academic Work — Ara Institute","title":"Structural Model"},{"src":"model_timber.jpg","location":"Academic Work — Ara Institute","title":"Structural Model — Detail"}]'>
+      <img src="model_timber2.jpg" alt="Timber Model">
+      <div class="project-overlay">
+        <p class="project-location">Academic Work — Ara Institute</p>
+        <p class="project-name">Structural Model</p>
+      </div>
+    </div>
+
+    <!-- CONCEPT — copper -->
+    <div class="project-card reveal" data-images='[{"src":"concept_copper.jpg","location":"Academic Work — Ara Institute","title":"Concept Design — Copper Facade"},{"src":"concept_entry.jpg","location":"Academic Work — Ara Institute","title":"Concept Design — Entry"}]'>
+      <img src="concept_copper.jpg" alt="Concept Copper">
+      <div class="project-overlay">
+        <p class="project-location">Academic Work — Ara Institute</p>
+        <p class="project-name">Concept Design</p>
+      </div>
+    </div>
+
+    <!-- CONCEPT — corten canopy -->
+    <div class="project-card reveal" data-images='[{"src":"concept_corten.jpg","location":"Academic Work — Ara Institute","title":"Concept Design — Corten Canopy"}]'>
+      <img src="concept_corten.jpg" alt="Concept Corten">
+      <div class="project-overlay">
+        <p class="project-location">Academic Work — Ara Institute</p>
+        <p class="project-name">Corten Canopy</p>
+      </div>
+    </div>
+
+    <!-- CONCEPT — elevation -->
+    <div class="project-card reveal" data-images='[{"src":"concept_elevation.jpg","location":"Academic Work — Ara Institute","title":"Concept Elevation"}]'>
+      <img src="concept_elevation.jpg" alt="Concept Elevation">
+      <div class="project-overlay">
+        <p class="project-location">Academic Work — Ara Institute</p>
+        <p class="project-name">Concept Elevation</p>
+      </div>
+    </div>
+
+    <!-- CONCEPT — site analysis -->
+    <div class="project-card reveal" data-images='[{"src":"concept_river.jpg","location":"Academic Work — Ara Institute","title":"Site Analysis"},{"src":"concept_bubble.jpg","location":"Academic Work — Ara Institute","title":"Concept Diagrams"},{"src":"concept_section.jpg","location":"Academic Work — Ara Institute","title":"Concept Section"},{"src":"concept_model1.jpg","location":"Academic Work — Ara Institute","title":"Site Model"},{"src":"concept_model2.jpg","location":"Academic Work — Ara Institute","title":"Site Model Detail"}]'>
+      <img src="concept_river.jpg" alt="Site Analysis">
+      <div class="project-overlay">
+        <p class="project-location">Academic Work — Ara Institute</p>
+        <p class="project-name">Site Analysis & Concept</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="about-left reveal">
+    <p class="about-tag">About</p>
+    <h2 class="about-heading">Considered<br>design, <em>built<br>with care</em></h2>
+  </div>
+  <div class="about-right reveal">
+    <p class="about-bio">
+      I'm an Architectural Designer based in <strong>Melbourne</strong>, with over four years of post-graduate experience across residential projects in <strong>New Zealand and London</strong>. I have full working rights in Australia and am actively seeking a full-time position.<br><br>
+      At <strong>MW Architects in London</strong>, I worked across all RIBA stages on private residential refurbishments and extensions — from concept through planning, detailed documentation, and construction. I'm highly proficient in ArchiCAD and focused on producing work that is well-resolved, technically accurate, and buildable.
+    </p>
+    <div class="skills-grid">
+      <div class="skill-item">
+        <p class="skill-label">Software</p>
+        <p class="skill-value">ArchiCAD · Twinmotion · Adobe Suite · SketchUp</p>
+      </div>
+      <div class="skill-item">
+        <p class="skill-label">Specialisation</p>
+        <p class="skill-value">Residential · Documentation · Consultant Coordination</p>
+      </div>
+      <div class="skill-item">
+        <p class="skill-label">Education</p>
+        <p class="skill-value">BArch — Ara Institute of Canterbury, 2021</p>
+      </div>
+      <div class="skill-item">
+        <p class="skill-label">Based</p>
+        <p class="skill-value">Melbourne, VIC — Full AU Working Rights</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section class="experience section" id="experience">
+  <div class="section-header reveal">
+    <h2 class="section-title">Experience</h2>
+    <span class="section-count">04 Roles</span>
+  </div>
+  <div class="exp-item reveal">
+    <div>
+      <p class="exp-company">Design Workshop Architecture</p>
+      <p class="exp-location">Christchurch, NZ</p>
+    </div>
+    <div>
+      <p class="exp-role">Architectural Technician</p>
+      <p class="exp-desc">Contract role assisting with planning and construction documentation, supporting the director with daily tasks and project delivery.</p>
+    </div>
+    <p class="exp-date">2025 — 2026</p>
+  </div>
+  <div class="exp-item reveal">
+    <div>
+      <p class="exp-company">MW Architects</p>
+      <p class="exp-location">London, UK</p>
+    </div>
+    <div>
+      <p class="exp-role">Architectural Assistant</p>
+      <p class="exp-desc">Worked across all RIBA stages on private residential refurbishments and extensions. Prepared planning drawings and supporting statements, produced detailed tender and construction documentation. Coordinated with engineers, consultants and contractors. Assisted with contract administration, valuations and obtaining quotes.</p>
+    </div>
+    <p class="exp-date">2024 — 2025</p>
+  </div>
+  <div class="exp-item reveal">
+    <div>
+      <p class="exp-company">Stufkens + Chambers</p>
+      <p class="exp-location">Christchurch, NZ</p>
+    </div>
+    <div>
+      <p class="exp-role">Graduate Architectural Designer</p>
+      <p class="exp-desc">Focused on concept design and presentation work across residential new builds, townhouse developments and education projects. Contributed to planning applications and detailed construction drawings, coordinating with engineers and consultants.</p>
+    </div>
+    <p class="exp-date">2021 — 2023</p>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="contact-left reveal">
+    <h2 class="contact-heading">Let's<br><em>work</em><br>together.</h2>
+  </div>
+  <div class="contact-right reveal">
+    <div class="contact-item">
+      <span class="contact-label">Email</span>
+      <a href="mailto:sean.swanson13@gmail.com" class="contact-value">sean.swanson13@gmail.com</a>
+    </div>
+    <div class="contact-item">
+      <span class="contact-label">Phone</span>
+      <a href="tel:+61423225040" class="contact-value">+61 423 225 040</a>
+    </div>
+    <div class="contact-item">
+      <span class="contact-label">Location</span>
+      <span class="contact-value">Melbourne, VIC</span>
+    </div>
+    <div class="contact-item">
+      <span class="contact-label">Availability</span>
+      <span class="contact-value">Immediate — Full Time</span>
+    </div>
+    <br>
+    <a href="Sean_Swanson_CV.pdf" class="btn" target="_blank" style="margin-top: 32px;">Download CV</a>
+  </div>
+</section>
+
+<footer>
+  <span>© 2026 Sean Swanson</span>
+  <span>Architectural Designer — Melbourne</span>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  document.addEventListener('mousemove', e => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+  });
+  document.querySelectorAll('a, .project-card, .btn, .lightbox-close, .lightbox-nav').forEach(el => {
+    el.addEventListener('mouseenter', () => cursor.classList.add('expand'));
+    el.addEventListener('mouseleave', () => cursor.classList.remove('expand'));
+  });
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+
+  // Lightbox
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightbox-img');
+  const lightboxLocation = document.getElementById('lightbox-location');
+  const lightboxTitle = document.getElementById('lightbox-title');
+  const lightboxCounter = document.getElementById('lightbox-counter');
+  let currentImages = [];
+  let currentIndex = 0;
+
+  function openLightbox(images, index) {
+    currentImages = images;
+    currentIndex = index;
+    showImage();
+    lightbox.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function showImage() {
+    const img = currentImages[currentIndex];
+    lightboxImg.src = img.src;
+    lightboxLocation.textContent = img.location;
+    lightboxTitle.textContent = img.title;
+    lightboxCounter.textContent = currentImages.length > 1 ? `${currentIndex + 1} / ${currentImages.length}` : '';
+    document.getElementById('lightbox-prev').style.display = currentImages.length > 1 ? 'block' : 'none';
+    document.getElementById('lightbox-next').style.display = currentImages.length > 1 ? 'block' : 'none';
+  }
+
+  function closeLightbox() {
+    lightbox.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  document.querySelectorAll('.project-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const images = JSON.parse(card.dataset.images);
+      openLightbox(images, 0);
+    });
+  });
+
+  document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+  document.getElementById('lightbox-prev').addEventListener('click', e => {
+    e.stopPropagation();
+    currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length;
+    showImage();
+  });
+  document.getElementById('lightbox-next').addEventListener('click', e => {
+    e.stopPropagation();
+    currentIndex = (currentIndex + 1) % currentImages.length;
+    showImage();
+  });
+  lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+  document.addEventListener('keydown', e => {
+    if (!lightbox.classList.contains('active')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowRight') { currentIndex = (currentIndex + 1) % currentImages.length; showImage(); }
+    if (e.key === 'ArrowLeft') { currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length; showImage(); }
+  });
+</script>
+</body>
+</html>
